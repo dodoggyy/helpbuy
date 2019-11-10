@@ -114,8 +114,19 @@ def load_item(my_data, index):
     return my_data
 
 
-def job(x):
-    pass
+def job(my_data_list):
+    index = 0
+    while True:
+        r2 = requests.post('https://shopee.tw/api/v2/checkout/get', data=json.dumps(my_data_list[index][1]), headers=headers)
+        json_r2 = json.loads(r2.text)
+        if bool(json_r2["buyer_txn_fee_info"]["error"] == 'invalid_rule_id'):
+            break
+    print("R2 status:", r2.status_code)
+    #print(r2.text)
+
+    r3 = requests.post('https://shopee.tw/api/v2/checkout/place_order', data=r2.text, headers=headers)
+    print("R3 status:", r3.status_code)
+    # print(r3.text)
 
 
 def single_preprocess(index):
@@ -142,7 +153,7 @@ def single_preprocess(index):
     print("R1 status: ", r1.status_code)
 
     #print(my_data_list[index][1])
-    return
+    return my_data_list
 
 
 def multi_process():
@@ -190,15 +201,24 @@ def main():
 
     r3 = requests.post('https://shopee.tw/api/v2/checkout/place_order', data=r2.text, headers=headers)
     print("R3 status:", r3.status_code)
-    print(r3.text)
+    #print(r3.text)
 
 
 if __name__ == '__main__':
-    main()
-    # for i in range(len(item_list)):
-    #     my_data_list.append(load_json_file())
-    # for i in range(len(my_data_list)):
-    #     my_data_list[i] = load_item(my_data_list[i], i)
-    # for i in range(len(item_list)):
-    #     single_preprocess(i)
+    # main()
+    my_data_list = []
+    for i in range(len(item_list)):
+        my_data_list.append(load_json_file())
+    for i in range(len(my_data_list)):
+        my_data_list[i] = load_item(my_data_list[i], i)
+    for i in range(len(item_list)):
+        my_data_list = single_preprocess(i)
     # multi_process()
+    p1 = mp.Process(target=job, args=(my_data_list,))
+    p2 = mp.Process(target=job, args=(my_data_list,))
+    p3 = mp.Process(target=job, args=(my_data_list,))
+    p4 = mp.Process(target=job, args=(my_data_list,))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
