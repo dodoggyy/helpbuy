@@ -64,6 +64,7 @@ item2 = {"add_on_deal_id": "", "item_group_id" : "", "is_add_on_sub_item": '', "
 item3 = {"add_on_deal_id": "", "item_group_id" : "", "is_add_on_sub_item": '', "itemid": 1406607303, "modelid": 1958485669, "shopid":7333053, "index":0, "voucher":"C7PHKJ6W7"}
 item4 = {"add_on_deal_id": "", "item_group_id" : "", "is_add_on_sub_item": '', "itemid": 1406607303, "modelid": 1958485669, "shopid":7333053, "index":0, "voucher":"C7PHKJ6W7"}
 
+
 item_list = [
     item1,
 #    item2,
@@ -121,6 +122,8 @@ def job(my_data_list):
         json_r2 = json.loads(r2.text)
         if bool(json_r2["buyer_txn_fee_info"]["error"] == 'invalid_rule_id'):
             break
+    # r2 = requests.post('https://shopee.tw/api/v2/checkout/get', data=json.dumps(my_data_list[index][1]), headers=headers)
+    print(r2.text)
     print("R2 status:", r2.status_code)
     #print(r2.text)
 
@@ -132,17 +135,20 @@ def job(my_data_list):
 def single_preprocess(index):
     while True:
         r = requests.get(url_list[index], headers=headers)
-        print(r.status_code)
+        print("R1 status: ", r.status_code)
         json_array = json.loads(r.text)
         if (item_list[index]["modelid"] == ''):
-            print(json_array["item"]["stock"])
+            #print(json_array["item"]["stock"])
             if (json_array["item"]["stock"]):
                 del my_data_list[index][0]['modelid']
                 del my_data_list[index][1]["shoporders"][0]["items"][0]["modelid"]
                 break
         else:
-            print(json_array["item"]["models"][index]["stock"])
-            if (json_array["item"]["stock"]):
+            #print(json_array["item"]["models"][index]["stock"])
+            #print("test: ",item_list[index]["index"])
+            print("stock:", json_array["item"]["models"][2]["stock"])
+            stock_index = int(item_list[index]["index"])
+            if (json_array["item"]["models"][stock_index]["stock"] != 0):
                 my_data_list[index][0]["modelid"] = item_list[index]["modelid"]
                 my_data_list[index][1]["shoporders"][0]["items"][0]["modelid"] = item_list[index]["modelid"]
                 break
@@ -175,16 +181,19 @@ def main():
         json_array = json.loads(r.text)
         if (item_list[index]["modelid"] == ''):
             print(json_array["item"]["stock"])
-            if (json_array["item"]["stock"]):
-                del my_data_list[index][0]['modelid']
+            if (json_array["item"]["stock"]["index"]["stock"]):
+                my_data_list[index][0]["modelid"] = item_list["index"]["modelid"]
                 del my_data_list[index][1]["shoporders"][0]["items"][0]["modelid"]
                 break
-        else:
-            print(json_array["item"]["models"][index]["stock"])
-            if (json_array["item"]["stock"]):
-                my_data_list[index][0]["modelid"] = item_list[index]["modelid"]
-                my_data_list[index][1]["shoporders"][0]["items"][0]["modelid"] = item_list[index]["modelid"]
-                break
+            else:
+                # print(json_array["item"]["models"][index]["stock"])
+                # print("test: ",item_list[index]["index"])
+                print("stock:", json_array["item"]["models"][2]["stock"])
+                stock_index = int(item_list[index]["index"])
+                if (json_array["item"]["models"][stock_index]["stock"] != 0):
+                    my_data_list[index][0]["modelid"] = item_list[index]["modelid"]
+                    my_data_list[index][1]["shoporders"][0]["items"][0]["modelid"] = item_list[index]["modelid"]
+                    break
     # print(my_data_list)
     #print(json.dumps(my_data_list[index][0]))
     r1 = requests.post('https://shopee.tw/api/v2/cart/add_to_cart', data=json.dumps(my_data_list[index][0]), headers=headers)
@@ -194,6 +203,7 @@ def main():
     while True:
         r2 = requests.post('https://shopee.tw/api/v2/checkout/get', data=json.dumps(my_data_list[index][1]), headers=headers)
         json_r2 = json.loads(r2.text)
+        print(json_r2)
         if bool(json_r2["buyer_txn_fee_info"]["error"] == 'invalid_rule_id'):
             break
     print("R2 status:", r2.status_code)
