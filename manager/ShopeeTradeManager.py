@@ -5,10 +5,6 @@ import multiprocessing as mp
 from utility.KeyDefine import KeyDefine as KEY
 from time import sleep
 
-url_cart = 'https://shopee.tw/api/v2/checkout/get'
-url_checkout = 'https://shopee.tw/api/v2/checkout/place_order'
-
-json_path = "../conf/"
 
 process_strategy_single = False
 
@@ -49,7 +45,7 @@ def load_file():
     payload_list = []
     index = 0
     for file in file_name_list:
-        input_file_tmp = open(json_path + file + ".json", "r", encoding="utf-8")
+        input_file_tmp = open(KEY.JSON_PATH + file + ".json", "r", encoding="utf-8")
         payload_tmp = json.load(input_file_tmp)
         payload_tmp["promotion_data"]["voucher_code"] = voucher_list[index]
         index += 1
@@ -58,7 +54,7 @@ def load_file():
 
 
 def execute_cart_post(payload, delay):
-    request_cart = requests.post(url_cart, data=json.dumps(payload), headers=KEY.SHOPEE_HEADER)
+    request_cart = requests.post(KEY.SHOPEE_URL_CART, data=json.dumps(payload), headers=KEY.SHOPEE_HEADER)
     # print(request_cart.status_code)
     json_array = request_cart.text
     # print(json_array)
@@ -87,7 +83,7 @@ def execute_cart_post(payload, delay):
 def execute_checkout_post(json_array):
     if json_array == None:
         return False
-    request_checkout = requests.post(url_checkout, data=json_array, headers=KEY.SHOPEE_HEADER)
+    request_checkout = requests.post(KEY.SHOPEE_URL_CHECKOUT, data=json_array, headers=KEY.SHOPEE_HEADER)
     print(request_checkout)
     return True
 

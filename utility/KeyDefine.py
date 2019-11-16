@@ -1,7 +1,9 @@
 class KeyDefine:
     # For input user config key
+    JSON_PATH = "../conf/"
     # For Yahoo config
     YAHOO_TOTAL_PROCESS = 10
+    YAHOO_AUTH_TOKEN = "WXFvF5OInFD"
     YAHOO_HEADER = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -13,6 +15,8 @@ class KeyDefine:
     };
 
     # For Shopee config
+    SHOPEE_URL_CART = 'https://shopee.tw/api/v2/checkout/get'
+    SHOPEE_URL_CHECKOUT = 'https://shopee.tw/api/v2/checkout/place_order'
     SHOPEE_TOTAL_PROCESS = 10
     SHOPEE_HEADER = {
         'Accept': 'application/json',

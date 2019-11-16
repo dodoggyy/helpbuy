@@ -11,7 +11,6 @@ class PayLoad:
     DELIVER_TYPE = 30
     # 商品編號
     ITEM_ID = 8435376
-    AUTH_TOKEN = "WXFvF5OInFD"
 
 
 data_deliver = {"type": "CALL_RESERVICE",
@@ -27,7 +26,7 @@ def init_config():
     data_deliver['payload']['cartType'] = str(PayLoad.DELIVER_TYPE)
     data_deliver['payload']['itemLines'][0]['productBundleId'] = str(PayLoad.ITEM_ID)
     # print(data_deliver['payload']['itemLines'][0]['productBundleId'])
-    data_deliver['payload']['authToken'] = PayLoad.AUTH_TOKEN
+    data_deliver['payload']['authToken'] = KEY.YAHOO_AUTH_TOKEN
     return data_deliver
 
 
